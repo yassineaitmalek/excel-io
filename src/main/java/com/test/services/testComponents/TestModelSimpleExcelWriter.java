@@ -5,7 +5,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.poi.ss.usermodel.Sheet;
 
 import com.test.models.local.TestModel;
-import com.test.services.excel.components.SimpleExcelWriter;
+import com.test.services.excel.components.writer.SimpleExcelWriter;
 
 public class TestModelSimpleExcelWriter extends SimpleExcelWriter<TestModel> {
 

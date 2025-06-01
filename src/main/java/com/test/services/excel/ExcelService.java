@@ -1,88 +1,78 @@
 package com.test.services.excel;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Stream;
 
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.test.controllers.config.ApiDownloadInput;
-import com.test.exception.config.ServerSideException;
-import com.test.services.excel.components.ExcelSheetData;
-import com.test.services.excel.components.ExcelSheetWriter;
+import com.test.services.excel.components.reader.ExcelSheetData;
+import com.test.services.excel.components.writer.ExcelSheetWriter;
 import com.test.services.excel.reader.ExcelReaderService;
 import com.test.services.excel.writer.ExcelWriterService;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class ExcelService {
 
+  @Value("${excel.ext:xlsx}")
+  private String ext;
+
   private final ExcelReaderService excelReaderService;
 
   private final ExcelWriterService excelWriterService;
 
-  public ApiDownloadInput exportWorkBook(ExcelType type, String fileName, List<ExcelSheetWriter<?>> writers) {
+  public ApiDownloadInput exportWorkBook(ExcelType type, String fileName, List<? extends ExcelSheetWriter> writers) {
     return excelWriterService.exportWorkBook(type, fileName, writers);
   }
 
-  public ApiDownloadInput exportWorkBook(ExcelType type, String fileName, ExcelSheetWriter<?>... writers) {
+  public ApiDownloadInput exportWorkBook(ExcelType type, String fileName, ExcelSheetWriter... writers) {
     return excelWriterService.exportWorkBook(type, fileName, writers);
+  }
+
+  public ApiDownloadInput exportWorkBook(String fileName, List<? extends ExcelSheetWriter> writers) {
+    return excelWriterService.exportWorkBook(ExcelType.of(ext), fileName, writers);
+  }
+
+  public ApiDownloadInput exportWorkBook(String fileName, ExcelSheetWriter... writers) {
+    return excelWriterService.exportWorkBook(ExcelType.of(ext), fileName, writers);
   }
 
   public List<ExcelSheetData> readExcel(InputStream in, ExcelType type, boolean isHeader) {
     return excelReaderService.readExcel(in, type, isHeader);
   }
 
-  @Getter
-  @AllArgsConstructor
-  public enum ExcelType {
+  public void exportWorkBook(ExcelType type, String folderPath, String fileName,
+      List<? extends ExcelSheetWriter> writers) {
+    excelWriterService.exportWorkBook(type, folderPath, fileName, writers);
+  }
 
-    XLS("xls"),
+  public void exportWorkBook(ExcelType type, String folderPath, String fileName, ExcelSheetWriter... writers) {
+    excelWriterService.exportWorkBook(type, folderPath, fileName, writers);
+  }
 
-    XLSX("xlsx");
+  public void exportWorkBook(String folderPath, String fileName, ExcelSheetWriter... writers) {
+    excelWriterService.exportWorkBook(ExcelType.of(ext), folderPath, fileName, writers);
+  }
 
-    private final String ext;
+  public void exportWorkBook(Workbook workbook, String folderPath, String fileName) {
+    excelWriterService.exportWorkBook(workbook, folderPath, fileName);
+  }
 
-    public static Workbook createWorkbook(ExcelType ext) {
-      switch (ext) {
-        case XLS:
-          return new HSSFWorkbook();
-        case XLSX:
-          return new XSSFWorkbook();
-        default:
-          throw new ServerSideException("the extention is not supproted");
-      }
-    }
+  public Workbook creaWorkbook() {
+    return ExcelType.createWorkbook(ExcelType.of(ext));
+  }
 
-    public static Workbook loadWorkbook(InputStream in, ExcelType ext) throws IOException {
-      switch (ext) {
-        case XLS:
-          return new HSSFWorkbook(in);
-        case XLSX:
-          return new XSSFWorkbook(in);
-        default:
-          throw new ServerSideException("the extention is not supproted");
-      }
+  public void writeToWorkbook(Workbook workbook, List<? extends ExcelSheetWriter> writers) {
+    excelWriterService.writeToWorkbook(workbook, writers);
+  }
 
-    }
-
-    public static ExcelType of(String ext) {
-      return Stream.of(values())
-          .filter(e -> e.getExt().equals(ext))
-          .findFirst()
-          .orElseThrow(() -> new ServerSideException("the extention is not supproted"));
-
-    }
-
+  public void writeToWorkbook(Workbook workbook, ExcelSheetWriter... writers) {
+    excelWriterService.writeToWorkbook(workbook, writers);
   }
 
 }

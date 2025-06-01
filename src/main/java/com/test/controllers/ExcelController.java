@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import javax.validation.Valid;
-
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,8 +20,8 @@ import com.test.dto.FileDTO;
 import com.test.exception.config.ServerSideException;
 import com.test.models.local.TestModel;
 import com.test.services.excel.ExcelService;
-import com.test.services.excel.ExcelService.ExcelType;
-import com.test.services.excel.components.ExcelSheetData;
+import com.test.services.excel.ExcelType;
+import com.test.services.excel.components.reader.ExcelSheetData;
 import com.test.services.testComponents.TestModelSimpleExcelWriter;
 
 import lombok.RequiredArgsConstructor;

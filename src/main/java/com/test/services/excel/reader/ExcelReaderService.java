@@ -18,10 +18,11 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.stereotype.Service;
 
 import com.test.exception.config.ServerSideException;
-import com.test.services.excel.ExcelService.ExcelType;
-import com.test.services.excel.components.ExcelSheetData;
+import com.test.services.excel.ExcelType;
+import com.test.services.excel.components.reader.ExcelSheetData;
 import com.test.utility.CheckUtility;
 import com.test.utility.DateUtility;
+import com.test.utility.Utils;
 
 import io.vavr.control.Try;
 import lombok.RequiredArgsConstructor;
@@ -137,6 +138,6 @@ public class ExcelReaderService {
 
   public String checkField(String field) {
 
-    return Optional.ofNullable(field).map(String::trim).filter(e -> !"".equals(e)).orElse(null);
+    return Optional.ofNullable(field).map(String::trim).filter(Utils.not(""::equals)).orElse(null);
   }
 }
